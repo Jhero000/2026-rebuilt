@@ -63,14 +63,10 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
         joystick.leftBumper()
-                .whileTrue(drivetrain.applyRequest(() -> drive.withVelocityX(joystick.getLeftY() * MaxSpeed) // Drive
-                                                                                                             // forward
-                                                                                                             // with
-                                                                                                             // negative
-                                                                                                             // Y
-                                                                                                             // (forward)
+                .whileTrue(drivetrain.applyRequest(() -> 
+                        drive.withVelocityX(joystick.getLeftY() * MaxSpeed)                                                                            // (forward)
                         .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                        .withRotationalRate(-drivetrain.alignment()) // Drive counterclockwise with negative X (left)
+                        .withRotationalRate(-drivetrain.rAlignment()) // Drive counterclockwise with negative X (left)
                 ));
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(

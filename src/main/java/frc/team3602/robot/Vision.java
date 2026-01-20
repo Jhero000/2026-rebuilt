@@ -47,6 +47,10 @@ public class Vision {
         return (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
     }
 
+    public double getPoseY() {
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-primary").pose.getY();
+    }
+
     
 
 

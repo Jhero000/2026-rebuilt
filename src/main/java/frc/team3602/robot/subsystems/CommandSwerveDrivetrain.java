@@ -64,6 +64,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     /*PID Controllers */
     private final PIDController rotationController = new PIDController(.1, 0, 0.001);
+    private final PIDController yController = new PIDController(1, 0, 0.001);
 
     /* Swerve requests to apply during SysId characterization */
     private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization = new SwerveRequest.SysIdSwerveTranslation();
@@ -245,7 +246,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     boolean tv = vision.getHasTarget();
 
 
-    public double alignment() {
+    public double rAlignment() {
         
         if (tv = false)
         {
@@ -264,6 +265,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             return rotationSpeed;
         }
         }
+  
+
 
 
     @Override
