@@ -33,10 +33,18 @@ public class ShooterSubsystem extends SubsystemBase {
     // Go
     public Command setShootSpeed(double shootSpeed) {
         return runOnce(() -> {
-            shootermotor1.set(ShooterConstants.kShooterSpeed);
-            shootermotor2.set(ShooterConstants.kShooterSpeed); 
+            shootermotor1.set(shootSpeed);
+            shootermotor2.set(shootSpeed); 
         });
     }
+
+        public Command setShootVoltage(double shootVoltz) {
+        return runOnce(() -> {
+            shootermotor1.setVoltage(shootVoltz);
+            shootermotor2.setVoltage(shootVoltz); 
+        });
+    }
+
 
     public Command setFeederSpeed(double speed) {
         return runOnce(() -> {

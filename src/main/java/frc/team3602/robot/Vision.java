@@ -2,6 +2,7 @@ package frc.team3602.robot;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team3602.robot.LimelightHelpers;
 import frc.team3602.robot.LimelightHelpers.LimelightTarget_Fiducial;
 import frc.team3602.robot.LimelightHelpers.RawFiducial;
@@ -58,7 +59,6 @@ public class Vision {
     public double getPoseY() {
         return LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-primary").pose.getY();
     }
-
     
 
 

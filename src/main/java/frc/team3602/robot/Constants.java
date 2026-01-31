@@ -14,7 +14,7 @@ public final class Constants {
         public final static int kFeederMotorID = 7;
 
         //Motor Speeds
-        public final static double kShooterSpeed = .5;
+        public final static double kShooterSpeed = .75;
         public final static double kFeederMotorSpeed = .5;
     }
 

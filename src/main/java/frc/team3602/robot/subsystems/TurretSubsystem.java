@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.swerve.utility.WheelForceCalculator.Feedforwards;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,59 +18,65 @@ import frc.team3602.robot.Vision;
 
 public class TurretSubsystem extends SubsystemBase {
 
+    public CommandSwerveDrivetrain drivetrainSubsys;
 
-    //Motor
+    public TurretSubsystem(CommandSwerveDrivetrain drivetrainSubsys) {
+        this.drivetrainSubsys = drivetrainSubsys;
+    }
+
+    // Motor
     private final TalonFX turretMotor = new TalonFX(TurretConstants.kTurretMotorID);
     private final CANcoder turretEncoder = new CANcoder(TurretConstants.kTurretEncoderID);
 
-
     public TurretSubsystem() {
-        //Zero Encoder
+        // Zero Encoder
         turretMotor.setPosition(0);
 
     }
 
-    //Encoder
-  public Double getEncoder() {
-    return (turretMotor.getRotorPosition().getValueAsDouble() * 36); // every revolution is 36 degrees because it is a 10:1 gear ratio
-  }
+    private double turretFeedForward = 0.0;
 
-    //Vision
+    // Encoder
+    public Double getEncoder() {
+        return (turretMotor.getRotorPosition().getValueAsDouble() * 36); // every revolution is 36 degrees because it is
+                                                                         // a 10:1 gear ratio
+    }
+
+    // Vision
     public final Vision vision = new Vision();
 
-    //Set Point *This number needs to be changed*
+    // Set Point *This number needs to be changed*
     public double setAngle = 0;
 
-    //Controllers *These PID values need to be changed*
-    private final PIDController turretController = new PIDController(.05, 0.0, 0);
-    private final PIDController aimController = new PIDController(.03, 0.0, 0);
+    // Controllers *These PID values need to be changed*
+    private final PIDController turretController = new PIDController(.06, 0.0, 0);
+    private final PIDController aimController = new PIDController(.015, 0.0, 0);
 
+    private final Feedforwards aimFf = new Feedforwards(0);
 
-
-    //Commands
+    // Commands
 
     public Command setAngle(double setPosition) {
 
         return runOnce(() -> {
-        
 
-      if(setPosition > 90) {
-        setAngle = 90;
-      }
-      else if(setPosition < -180) {
-        setAngle = -180;
-      }
-    
-      else {
-            this.setAngle = setPosition;
-        }});
+            if (setPosition > 90) {
+                setAngle = 90;
+            } else if (setPosition < -180) {
+                setAngle = -180;
+            }
+
+            else { // hehe
+                this.setAngle = setPosition;
+            }
+        });
     }
 
     public Command testTurret(double voltage) {
         return runOnce(() -> {
             turretMotor.setVoltage(voltage);
         });
-        
+
     }
 
     public Command stopTurret() {
@@ -91,12 +98,12 @@ public class TurretSubsystem extends SubsystemBase {
             if (vision.getTurretHasTarget()) {
                 setAngle = setAngle - aimController.calculate(vision.getTurretTX(), 0);
             }
+            setAngle = turnFeedforward() + setAngle; // Adds rotational feedforward
             voltage = turretController.calculate(getEncoder(), setAngle);
-            if (voltage > .4){
-                voltage = .4;
-            }
-            else if (voltage < -.4){
-                voltage = -.4;
+            if (voltage > .6) {
+                voltage = .6;
+            } else if (voltage < -.6) {
+                voltage = -.6;
             }
             turretMotor.setVoltage(voltage);
         }
@@ -107,46 +114,50 @@ public class TurretSubsystem extends SubsystemBase {
 
     double rotationSpeed;
 
-    //Calculations
-        // public double rAlignment() {
-        
-        //     double tx = vision.getTX();
+    // Calculations
+    // public double rAlignment() {
 
-        //     rotationSpeed = turretController.calculate(tx, 0);
+    // double tx = vision.getTX();
 
-        //     if (Math.abs(rotationSpeed) < 0.5) {
-        //         rotationSpeed = 0;
-        //     }
+    // rotationSpeed = turretController.calculate(tx, 0);
 
-        //     return rotationSpeed;
-        
-        // }
+    // if (Math.abs(rotationSpeed) < 0.5) {
+    // rotationSpeed = 0;
+    // }
 
+    // return rotationSpeed;
 
-         
-public double rAlignment() {
-    // Rotation error in degrees (positive = tag is to the right, for example)
-    double rotationErrorDeg = vision.getTX();
+    // }
+    // Getting the rotational speed in degrees per execution
+    // Commands run every 20 milliSeconds / rotation per execution by 50 to get
+    // rotations per second.
 
-    // Tunable gain: volts per degree
-    double kP = 0.1; // example value
-
-    double voltage = rotationErrorDeg * kP;
-
-    // Deadband
-    if (Math.abs(voltage) < 0.3) {
-        voltage = 0.0;
+    public double turnFeedforward() {
+        turretFeedForward = (Math.toDegrees(drivetrainSubsys.getChassisSpeeds().omegaRadiansPerSecond)) /50;
+        return turretFeedForward;
     }
 
-    // Clamp to legal voltage range
-    voltage = Math.max(-12.0, Math.min(12.0, voltage));
+    public double rAlignment() {
+        // Rotation error in degrees (positive = tag is to the right, for example)
+        double rotationErrorDeg = vision.getTX();
 
-    return voltage;
-}
+        // Tunable gain: volts per degree
+        double kP = 0.1; // example value
 
+        double voltage = rotationErrorDeg * kP;
 
+        // Deadband
+        if (Math.abs(voltage) < 0.3) {
+            voltage = 0.0;
+        }
 
-    //Periodic
+        // Clamp to legal voltage range
+        voltage = Math.max(-12.0, Math.min(12.0, voltage));
+
+        return voltage;
+    }
+
+    // Periodic
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Turret Encoder", getEncoder());
@@ -154,14 +165,15 @@ public double rAlignment() {
         SmartDashboard.putNumber("Set Angle", setAngle);
         SmartDashboard.putNumber("Turret Set Angle", vision.getTurretTX());
         SmartDashboard.putNumber("Aim PID", aimController.calculate(vision.getTurretTX(), 0));
+        SmartDashboard.putNumber("Distance Calculation", vision.getDist());
 
+        // turretFeedForward = turnFeedforward();
+        SmartDashboard.putNumber("Turret Feedforward", turretFeedForward); // Bruh
 
-    }   
+    }
 
-
-
-    //Config
-        private void configPivotSubsys() {
+    // Config
+    private void configPivotSubsys() {
 
         // encoder configs
         var magnetSensorConfigs = new MagnetSensorConfigs();
@@ -180,5 +192,5 @@ public double rAlignment() {
 
         motorConfigs.NeutralMode = NeutralModeValue.Coast;
         turretMotor.getConfigurator().apply(motorConfigs);
-    } 
+    }
 }

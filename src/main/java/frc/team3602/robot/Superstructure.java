@@ -23,10 +23,10 @@ public class Superstructure {
     public TurretSubsystem turretSubsys;
     public CommandSwerveDrivetrain commandSwerveDrivetrainsubsys;
 
-     public Superstructure(IntakeSubsystem IntakeSubsys, ShooterSubsystem ShooterSubsys, SpindexerSubsystem spindexerSubsys,
-            TurretSubsystem TurretSubsys, CommandSwerveDrivetrain commandSwerveDrivetrainSubsys) {
-        this.intakeSubsys = IntakeSubsys;
-        this.shooterSubsys = ShooterSubsys;
+     public Superstructure(IntakeSubsystem intakeSubsys, ShooterSubsystem shooterSubsys, SpindexerSubsystem spindexerSubsys,
+            TurretSubsystem turretSubsys, CommandSwerveDrivetrain commandSwerveDrivetrainSubsys) {
+        this.intakeSubsys = intakeSubsys;
+        this.shooterSubsys = shooterSubsys;
         this.spindexerSubsys = spindexerSubsys;
         this.turretSubsys = turretSubsys;
             }

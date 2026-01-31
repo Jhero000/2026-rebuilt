@@ -73,6 +73,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization = new SwerveRequest.SysIdSwerveRotation();
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric();
 
+public ChassisSpeeds getChassisSpeeds() {
+    return super.getKinematics().toChassisSpeeds(getState().ModuleStates);
+}
+
+
     /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
     private final SysIdRoutine m_sysIdRoutineTranslation = new SysIdRoutine(
         new SysIdRoutine.Config(
@@ -274,8 +279,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public void periodic() {
         SmartDashboard.putNumber("Rotation Speed", this.rotationSpeed);
         SmartDashboard.putNumber("my heading", vision.getTX());
-        SmartDashboard.putNumber("turret angle", turret.getEncoder());
-        
+        SmartDashboard.putNumber("turret angle", turret.getEncoder());        
         /*
          * Periodically try to apply the operator perspective.
          * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.

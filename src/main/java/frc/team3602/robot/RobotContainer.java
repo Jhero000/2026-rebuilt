@@ -12,6 +12,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -20,6 +21,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.team3602.robot.Vision;
 import frc.team3602.robot.generated.TunerConstants;
 import frc.team3602.robot.subsystems.CommandSwerveDrivetrain;
+import frc.team3602.robot.subsystems.IntakeSubsystem;
+import frc.team3602.robot.subsystems.ShooterSubsystem;
+import frc.team3602.robot.subsystems.SpindexerSubsystem;
 import frc.team3602.robot.subsystems.TurretSubsystem;
 
 public class RobotContainer {
@@ -41,7 +45,11 @@ public class RobotContainer {
     public final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    public final TurretSubsystem turret = new TurretSubsystem();
+//     public final IntakeSubsystem intake = new IntakeSubsystem();
+    public final ShooterSubsystem shooter = new ShooterSubsystem();
+    public final TurretSubsystem turret = new TurretSubsystem(drivetrain);
+//     public final SpindexerSubsystem spindexer = new SpindexerSubsystem();
+//     public final Superstructure superStructure = new Superstructure(intake, shooter, spindexer, turret, drivetrain);
 
     public RobotContainer() {
         turret.setDefaultCommand(turret.track());
@@ -80,6 +88,7 @@ public class RobotContainer {
         joystick.povLeft().whileTrue(turret.setAngle(-30));
         joystick.povDown().whileTrue(turret.testTurret(0));
         joystick.rightBumper().whileTrue(turret.turretAlignment());
+       // joystick.y().whileTrue(shooter.setShootVoltage(10)).whileFalse(shooter.stopShooter(0.0));
 
 
         // Run SysId routines when holding back/start and X/Y.
