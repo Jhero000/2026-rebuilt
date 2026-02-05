@@ -171,9 +171,9 @@ public class TurretSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("GetTy", vision.getTY());
         // turretFeedForward = turnFeedforward();
         SmartDashboard.putNumber("Turret Feedforward", turretFeedForward); // Bruh
-
+        SmartDashboard.putNumber("Turret IMUy", vision.getTurretIMUy());
         SmartDashboard.putNumber("GetDistance", vision.getDist());
-        angle = Math.toRadians(vision.getTY() + 29.17);
+        angle = Math.toRadians(vision.getTY() + vision.getTurretIMUy());
         distance =(62.0 - 16.75) / Math.tan(angle);
         SmartDashboard.putNumber("counculatedDist", distance);
     }

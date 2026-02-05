@@ -61,7 +61,9 @@ public class Vision {
     }
     
 
-
+    public double getTurretIMUy() {
+        return LimelightHelpers.getIMUData("limelight-turret").gyroY;
+    }
 
 
 
